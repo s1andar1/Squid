@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Установка iptables
+      dnf:
+        name: iptables
+        state: present
+
+    - name: Включение ip forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+        state: present
+        reload: yes
+
+    - name: Применение настроек sysctl
+      command: sysctl -p
+
+    - name: Настройка NAT для исходящего трафика alt
+      iptables: 
+        chain: POSTROUTING
+        table: nat
+        source: 172.20.6.0/28
+        jump: MASQUERADE  
+
+    - name: Настройка NAT для исходящего трафика astra
+      iptables:
+        chain: POSTROUTING
+        table: nat
+        source: 172.20.7.0/28
+        jump: MASQUERADE
+  
