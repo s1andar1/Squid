@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  become: yes
+  tasks: 
+    - name: Установка sysstat
+      apt:
+        name: sysstat
+        state: present
+
+    - name: Получение информации о CPU
+      command: mpstat 1 1
+      register: CPU
+
+    - name: Вывод информации о процессоре
+      debug:
+        msg: CPU.stdout_lines
