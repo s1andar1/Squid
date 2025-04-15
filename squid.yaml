@@ -1,0 +1,46 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Установка squid
+      apt: 
+        name: squid
+        state: present
+    
+    - name: Установка apache2-utils
+      apt: 
+        name: apache2-utils
+        state: present
+
+    - name: Установка ufw
+      apt: 
+        name: ufw
+        state: present
+
+    - name: Внесение строки в файл /etc/resolv.conf
+      copy: 
+        content: "nameserver 8.8.8.8"
+        dest: /etc/resolv.conf
+
+    - name: Копирование шаблона в файл конфигурации squid
+      copy:
+        src: "/root/squidmydatafile.txt"
+        dest: /etc/squid/squid.conf
+
+    - name: Перезапуск squid
+      service: 
+        name: squid 
+        state: restarted
+
+    - name: Пинг ya.ru
+      command: ping -c 2 ya.ru
+      register: ping_result
+
+    - name: Результат ping 
+      debug: 
+        var: ping_result.stdout_lines
+
+    - name: Открыть порт через ufw
+      ufw:    
+        rule: allow
+        port: "3128"
+        proto: tcp
