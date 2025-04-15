@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  tasks: 
+    - name: Установка sysstat
+      apt:
+        name: sysstat
+        state: latest
+
+    - name: Получение информации о CPU
+      command: iostat
+      register: CPU
+
+    - name: Вывод информации о процессоре
+      debug:
+        msg: "{{ CPU.stdout }}"
